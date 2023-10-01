@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://images.unsplash.com/photo-1526554850534-7c78330d5f90?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1769&q=80'); /* Add a background image */
+            background-size: cover; /* Make the image cover the entire screen */
+        }
+        h1 {
+            color: #202124;
+            text-align: center;
+            padding: 20px 0;
+        }
+        .email {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0px 1px 2px 0 rgba(60,64,67,0.3), 0px 2px 6px 2px rgba(60,64,67,0.15);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ subject }}</h2>
+    <p>{{ body | safe }}</p>
+
+</body>
+</html>

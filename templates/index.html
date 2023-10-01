@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SmartScribe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://images.unsplash.com/photo-1526554850534-7c78330d5f90?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1769&q=80');
+            background-size: cover;
+        }
+        h1 {
+            color: #BB0000;
+            text-align: center;
+            padding: 20px 0;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .section {
+            flex: 1;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin: 10px;
+            overflow: auto;
+            position: relative;
+        }
+        label {
+            font-weight: bold;
+            color: #202124;
+            display: block;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: 1px solid #dadce0;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #1a73e8;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor:pointer;
+            border-radius: 4px;
+        }
+        .inbox {
+            max-height: 600px;
+            border-left: 1px solid #dadce0;
+            padding-left: 20px;
+        }
+        .email-item {
+            background-color: #fff;
+            box-shadow: 0px 1px 2px rgba(60,64,67,0.3),0px 2px 6px rgba(60,64,67,0.15);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        .email-item h2 {
+            font-size: 16px;
+            color: #202124;
+            margin-bottom: 5px;
+        }
+        .summarize-button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        #summary-holder {
+            margin: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            height: 500px;
+            overflow: auto;
+        }
+        .header {
+            font-size: 24px;
+            font-weight: bold;
+            color: #202124;
+            padding: 10px;
+        }
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #1a73e8;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            // Function to summarize an email by ID
+            function summarizeEmail(emailId, emailSubject) {
+                // Show loading spinner while summarizing
+                $(".loading-spinner").show();
+
+                // Add the header "Summarized Email" and email subject to the summary holder
+                $("#summary-holder").html('<div class="header">' + emailSubject + '</div>');
+
+                $.get('/summarize_email?id=' + emailId, function(data){
+                    // Hide loading spinner after summarization is complete
+                    $(".loading-spinner").hide();
+
+                    // Display the summarized email in the separate text holder
+                    console.log(data[0])
+                    $("#summary-holder").append('<p>' + data[0].summary_text + '</p>'); // Add the summarized text
+                });
+            }
+
+            $.get("/get_emails", function(data){
+                data.forEach(function(email){
+                    console.log(email);
+                    var emailItem = $('<div class="email-item"><h2>'+email.subject+'</h2></div>');
+
+                    // Add a click event handler to the entire email item to redirect to display_email
+                    emailItem.on('click', function() {
+                        // Redirect to a new page to display the email
+                        window.location.href = '/display_email?id=' + email.id;
+                    });
+
+                    var summarizeButton = $('<button class="summarize-button">Summarize</button>');
+
+                    // Add a click event handler to the Summarize button
+                    summarizeButton.on('click', function(e) {
+                        e.stopPropagation(); // Prevent the click event from propagating to the emailItem click
+                        summarizeEmail(email.id, email.subject); // Use email.id and email.subject to get the email's ID and subject
+                    });
+
+                    // Append the Summarize button to the email item
+                    emailItem.append(summarizeButton);
+
+                    // Append the email item to the inbox
+                    $(".inbox").append(emailItem);
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>SmartScribe</h1>
+
+    <div class="container">
+        <div class="section">
+            <h2 class="header">Inbox</h2>
+            <div class="inbox"></div>
+        </div>
+        <div class="section">
+            <h2 class="header">Email Summary</h2>
+            <!-- Separate text holder for displaying summarized email -->
+            <div id="summary-holder" class="summary-holder"></div>
+            <!-- Add a loading spinner -->
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+</body>
+</html>
