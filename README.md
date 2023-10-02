@@ -1,6 +1,6 @@
 # SmartScribe
 
-SmartScribe is a web application built with Flask, Python, HTML, CSS, and JavaScript that leverages the Nylas SDK and Hugging Face Text Summarization API to enhance your email inbox experience.
+SmartScribe is a web application built with Flask, Python, HTML, CSS, and JavaScript that leverages the Nylas SDK and Hugging Face Text Summarization API to enhance your email inbox experience. This project is made for Nylas and AI: Email and Calendaring for the Future Hackthon
 
 ## Setting up Nylas in your project
 
